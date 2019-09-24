@@ -78,13 +78,17 @@ sampleids <- cbind(c(cluster2))
 sample <- sampleids
 colnames(sample) <- "UNITID"
 
+
+dat1b <- data.frame(propensity_score = dat1b)
+dat2b <- data.frame(propensity_score = dat2b)
+dat1b$id <- 'sample'
+dat2b$id <- 'population'
+newdat <- rbind(dat1b, dat2b)
+ggplot(newdat, aes(propensity_score, fill = id)) + geom_density(alpha = 0.2)
+ggplot(newdat, aes(propensity_score, fill = id)) + geom_histogram(alpha = 0.2)
+
+
 ## If you pull, say, all 100 schools from Cluster 2 (when it only asked for 8),
 ## you get a generalizer index value of 0.25!
 ## However -- if you actually pull the perfect number of schools from each cluster,
 ## it goes to 0. Need to check the Tipton paper.
-
-
-## Other note to self. The B Index is the "histogram distance." So we should
-## be able (ha! get it) to visually confirm the similarity or differences of
-## different samples vs. the population. Could be worthwhile looking at this,
-## at least to confirm that it's behaving reasonably.

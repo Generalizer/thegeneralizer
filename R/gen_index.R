@@ -6,15 +6,19 @@ Bindex <- function(dat1B,dat2B) {
   # bandwidth
   h = function(x){
     n = length(x)
-    return((4*sqrt(var(x))^5/(3*n))^(1/5))
+    optim_binwidth = (4*sqrt(var(x))^5/(3*n))^(1/5)
+    if(optim_binwidth < 0.001){ # this yielded a b index of 0.9999501 for (at least one specific case of) "perfectly" stratified data
+      optim_binwidth = 0.001
+    }
+    return(optim_binwidth)
   }
 
   # kernel estimators of the density and the distribution
   kg = function(x,data){
     hb = h(data) #bin width
     k = r = length(x)
-    for(i in 1:k) r[i] = mean(dnorm((x[i]-data)/hb))/hb
-    return(r )
+    for(i in 1:k) r[i] = mean(dnorm((x[i]-data)/hb))/hb # we divide by bin width, which is a problem when bin width goes to zero
+    return(r)
   }
 
   return( as.numeric(integrate(function(x) sqrt(kg(x,dat1B)*kg(x,dat2B)),-Inf,Inf)$value))
