@@ -1,3 +1,11 @@
+#'Generate recruitment lists with added id variables based on universe dataset originated from
+#'
+#'@param solution object storing the output of \code{stratifier}, typically \code{generalizer_output}
+#'@param custom_id a dataframe containing the ID Variable and additional id variables to be added to recruitment lists
+#'@return Saves recruitment lists in project directory.
+#' @examples
+
+
 recruitment_list <- function(solution, custom_id){
   
   pop <- menu(choices = (c("IPEDS (Post-secondary)", "Common Core (K-12)",

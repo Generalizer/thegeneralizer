@@ -1,4 +1,29 @@
-stratifier_exp <- function(x, metric = "gower"){
+#'Stratify a population data frame.
+#'
+#'An expedited version of stratifier. This function is designed to receive a data frame containing information about
+#'an inference population, and containing only stratification variables
+#'
+#'
+#'@param data A data frame containing information about schools in your
+#'  inference population. Must contain only a column of ID numbers identifying each
+#'  school, and columns of relevant stratifying variables.
+#'@param metric A character string specifying the metric to be used in
+#'  calculating distances for observations. The default is \code{gower}; other
+#'  options are \code{euclidean} and \code{manhattan}.
+#'@param clusters A number specifying the number of clusters for stratification.
+#'@return A list. The first element contains the raw results of stratifying the
+#'  data into the user-selected number of clusters. The second element contains
+#'  several lists, each ranking the observations within clusters.
+#'@seealso \url{http://thegeneralizer.org/}, also add other resources
+#' @examples
+
+
+stratifier_exp <- function(x, metric = "gower", clusters){
+  
+  ##### IS THIS THE RIGHT ERROR TRAP?? 
+  if(clusters < 1){
+    stop("You should choose a number of clusters to stratify your data into.")
+  }
   
     cat("Welcome to the expedited version of stratifier. If this is your first time using the generalizer,",
       " we recommend running the guided version, stratifier, instead. Using stratifier_exp requires that you have already",
@@ -31,8 +56,8 @@ stratifier_exp <- function(x, metric = "gower"){
   
   # Select stratifying variables --------------------------------------------
   
-  cat("\nYou're now ready to select your stratification variables.",
-      "The following are the current stratifying variables selected. \n\n")
+  cat("You have chosen to stratify your data into ", bold(clusters), " clusters using",
+      "the following variables: \n\n")
   
   cat(paste(names(x),collapse=", "))
   
@@ -48,12 +73,6 @@ stratifier_exp <- function(x, metric = "gower"){
   }
   
   # Clustering ---------------------------------------------------------
-  
-  clusterchoice <- (menu(choices = c(4, 5, 6, 7, 8),
-                         title = cat("Choose a number of strata to divide your population into")) + 3)
-  if(clusterchoice < 4 | clusterchoice > 8){
-    stop("You should choose a number of clusters between 4 and 8.")
-  }
   
   cat("This might take a little while. Please bear with us.")
   
@@ -72,7 +91,7 @@ stratifier_exp <- function(x, metric = "gower"){
   cat("\n1: Imputed missing data using mice package.")
   suppressWarnings(distance <- daisy(x, metric=metric))
   cat("\n2: Calculated distance matrix.")
-  solution <- KMeans_rcpp(as.matrix(distance), clusters=clusterchoice, verbose = TRUE)
+  solution <- KMeans_rcpp(as.matrix(distance), clusters=clusters, verbose = TRUE)
   
   
   # Reattaching ID variable -------------------------------------------------
@@ -81,7 +100,7 @@ stratifier_exp <- function(x, metric = "gower"){
   
   sortedschools <- list(NULL)
   
-  for(i in 1:clusterchoice){
+  for(i in 1:clusters){
     dat3 <- x2 %>%
       dplyr::filter(clusterID == i)
     idvar <- dat3 %>% select(idnum)
