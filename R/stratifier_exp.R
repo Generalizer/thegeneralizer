@@ -7,78 +7,73 @@
 #'@param data A data frame containing information about schools in your
 #'  inference population. Must contain only a column of ID numbers identifying each
 #'  school, and columns of relevant stratifying variables.
+#'@param idnum A character string specifying the name of the ID column identifying each school/observation.
 #'@param metric A character string specifying the metric to be used in
 #'  calculating distances for observations. The default is \code{gower}; other
 #'  options are \code{euclidean} and \code{manhattan}.
 #'@param clusters A number specifying the number of clusters for stratification.
+#'@param autosave If \code{TRUE}, results of stratification will be saved into global environment as '\code{generalizer_output}'
 #'@return A list. The first element contains the raw results of stratifying the
 #'  data into the user-selected number of clusters. The second element contains
 #'  several lists, each ranking the observations within clusters.
 #'@seealso \url{http://thegeneralizer.org/}, also add other resources
 #' @examples
 
+stratifier_exp <- function(x, idnum, metric = "gower", clusters, autosave = TRUE){
 
-stratifier_exp <- function(x, metric = "gower", clusters){
-  
-  ##### IS THIS THE RIGHT ERROR TRAP?? 
+  ##### IS THIS THE RIGHT ERROR TRAP??
   if(clusters < 1){
     stop("You should choose a number of clusters to stratify your data into.")
   }
-  
+
+  ##########IS THIS STILL NECESSARY? DO WE WANT THIS TO BE THE DEFAULT?
+
     cat("Welcome to the expedited version of stratifier. If this is your first time using the generalizer,",
       " we recommend running the guided version, stratifier, instead. Using stratifier_exp requires that you have already",
-      " filtered your dataset and selected your stratifying variables. Press [esc] to exit if necessary.\n")
-  
+      " filtered your dataset and selected your stratifying variables. Press [esc] to exit if necessary.\n\n")
+
   # Define inference population  ---------------------------------------------
-  
-    read_id <- function()
-    {
-      cat("\n")
-      n <- readline(prompt = "Enter the name of the ID Variable in your dataset: ")
-      if(!n %in% names(x))
-      {
-        cat("We could not find that variable. Please make sure your dataset has a variable containing IDs of your data.",
-            "If necessary, press [esc] to leave stratifier()")
-        return(read_id())
-      }
-      return(n)
+
+    if(!idnum %in% names(x)){
+      stop("We could not find that variable. Please make sure your dataset has a variable containing IDs of your data.")
     }
-    idnum <- read_id()
-  
+
   # Selecting the ID column(s)
-  
+
   id <- x %>% select(idnum)
-  
+
   # From now on the id column(s) is separated from the rest of the data frame, they're stored as "id".
   # "idnum" is a vector of the id column(s).
-  
+
   x <- x %>% select(-idnum)
-  
+
   # Select stratifying variables --------------------------------------------
-  
-  cat("You have chosen to stratify your data into ", bold(clusters), " clusters using",
+
+  cat("Your ID Variable is ", blue(idnum), ".")
+
+  cat("\nYou have chosen to stratify your data into ", blue(clusters), " clusters using",
       "the following variables: \n\n")
-  
+
   cat(paste(names(x),collapse=", "))
-  
+
   # Verifying the variables
-  
+
   cat(red("\n\nPress [esc] to exit and remove the variables you do not wish to include in the stratification.",
       "Else, proceed."))
-  
+
   if(menu(choices = c("Yes", "No"), title = cat("\nDo you wish to proceed?")) == 1){
-    
+
   }else{
     stop("You have stopped the stratification process.")
   }
-  
+
   # Clustering ---------------------------------------------------------
-  
+
   cat("This might take a little while. Please bear with us.")
-  
+
   set.seed(111) # Can change this to whatever Programmer Katie uses
   # to see if we can match the web app results.
-  
+
   # Soo I learned today that Kmeans breaks if there are ANY missing values in the distance matrix.
   # It seems that, although the gower metric is pretty good at handling missing data,
   # if there is a TON of missing data, it will still fail and leave
@@ -92,14 +87,14 @@ stratifier_exp <- function(x, metric = "gower", clusters){
   suppressWarnings(distance <- daisy(x, metric=metric))
   cat("\n2: Calculated distance matrix.")
   solution <- KMeans_rcpp(as.matrix(distance), clusters=clusters, verbose = TRUE)
-  
-  
+
+
   # Reattaching ID variable -------------------------------------------------
-  
+
   x2 <- data.frame(id, x, clusterID = solution$clusters)
-  
+
   sortedschools <- list(NULL)
-  
+
   for(i in 1:clusters){
     dat3 <- x2 %>%
       dplyr::filter(clusterID == i)
@@ -108,7 +103,7 @@ stratifier_exp <- function(x, metric = "gower", clusters){
     mu <- moment(dat4, order=1, central=FALSE) # population mean of stratifying vars
     v <- var(dat4)
     a <- diag(v)
-    
+
     if(any(a == 0)){ a[which(a == 0)] <- 0.00000001 }
     cov.dat <- diag(a)
     ma.s <- mahalanobis(dat4,mu,cov.dat)
@@ -118,21 +113,21 @@ stratifier_exp <- function(x, metric = "gower", clusters){
       arrange(distance) %>%
       select(idnum)
   }
-  
+
   generalizer_output <<- list(solution, sortedschools, data=x, iddata=x2, idvar=idnum)
-  
+
   readline(prompt = "Press [enter] to view the results")
-  
+
  # Heatmap generation -------------------------------------------
 
     n_clusters <- max(solution$clusters)
 
     cat("\n\nYou have specified ")
-    cat(bold (n_clusters)) 
+    cat(bold (n_clusters))
     cat(" strata, which explains ")
     cat(bold(100*round(solution$between.SS_DIV_total.SS, 4), "%"))
     cat(" of the total variation in the population")
-        
+
     cat("\n\nThe following table presents the average value (mean) for each covariate for each stratum.\nThe first row, 'All,' presents the average values for the entire inference population. \nThe last column, '# of Schools,' lists the total number of schools in the inference population \nthat fall within each stratum.\n\n")
 
     data <- data.frame(x, clusters=as.character(solution$clusters))
@@ -200,11 +195,11 @@ stratifier_exp <- function(x, metric = "gower", clusters){
                                      (Mean - Pop_Mean)/Pop_Mean <= -0.7 ~ -0.7,
                                      TRUE ~ (Mean - Pop_Mean)/Pop_Mean)) %>%
         mutate(Clusters = ifelse(Clusters == "Population", "Total", Clusters))
-      
+
       #Preserve levels
       heatdata$Stratifying_Variable <- factor(heatdata$Stratifying_Variable,
                                               levels = rev(unique(heatdata$Stratifying_Variable)))
-      
+
       #Heatmap
             heat <- ggplot(data = heatdata) +
         geom_tile(aes(x = Clusters, y = Stratifying_Variable, fill = Deviation), width = 0.95) +
@@ -229,16 +224,20 @@ stratifier_exp <- function(x, metric = "gower", clusters){
               legend.position = "right")
 
       print(heat)
-      
-      
-      cat("\nThis heat map compares the average values of the covariates in \nthe strata to the average values in the population.", 
+
+
+      cat("\nThis heat map compares the average values of the covariates in \nthe strata to the average values in the population.",
 "Strata with \nhigher average values are blue; strata with lower average values \nare red.",
 "Strata whose average values are close to that of the \npopulation are white. The number in each tile is the actual mean value. \n\n")
-      
-      cat(blue("We've saved your stratification output as"), blue$bold("'generalizer_output'"), 
-          blue("in the Global Environment. To generate recruitment lists, run recruitment_list(generalizer_output)."))
-      
-      return(invisible(generalizer_output))
-  
+
+      if(autosave){
+
+        cat(blue("We've saved your stratification output as"), blue$bold("'generalizer_output'"),
+            blue("in the Global Environment. To generate recruitment lists, run recruitment_list(generalizer_output)."))
+
+        return(invisible(generalizer_output))
+
+      }
+
 }
 
