@@ -75,7 +75,7 @@ stratifier <- function(x, metric = "gower"){
     idnum <- read_id()
     cat("\n\nIf you want to adjust or restrict your inference population (e.g., if you are interested in only one location, etc.), make sure that you have altered the data frame appropriately. \n")
   }
-0
+
   filterhelp <- menu(choices = c("Ready to proceed", "Need help filtering"), title = cat("If you need to alter the data frame, enter 0 to exit; you can use " %+% bold("dplyr::filter()") %+% " or " %+% bold("set_percentile_limits()") %+% " and return.\n"))
   if(filterhelp == 2){
     inference_help()

@@ -20,7 +20,13 @@ mean_table <- function(solution, plots = TRUE){
 
   n_clusters <- max(solution[[1]]$clusters)
 
-  cat("You have specified", n_clusters, "strata. The following table presents \nthe average value (mean) for each covariate for each stratum. \nThe first row, 'All,' presents the average values for the \nentire inference population. The last column, '# of \nSchools,' lists the total number of schools in the inference \npopulation that fall within each stratum.\n\n")
+  cat("\n\nYou have specified ")
+  cat(bold (n_clusters)) 
+  cat(" strata, which explains ")
+  cat(bold(100*round(solution$between.SS_DIV_total.SS, 4), "%"))
+  cat(" of the total variation in the population")
+  
+  cat("The following table presents \nthe average value (mean) for each covariate for each stratum. \nThe first row, 'All,' presents the average values for the \nentire inference population. The last column, '# of \nSchools,' lists the total number of schools in the inference \npopulation that fall within each stratum.\n\n")
 
   data <- data.frame(data, clusters=as.character(solution[[1]]$clusters))
 
@@ -89,7 +95,10 @@ mean_table <- function(solution, plots = TRUE){
                                    (Mean - Pop_Mean)/Pop_Mean <= -0.7 ~ -0.7,
                                    TRUE ~ (Mean - Pop_Mean)/Pop_Mean)) %>%
       mutate(Clusters = ifelse(Clusters == "Population", "Total", Clusters))
-
+    
+    #Preserve levels
+    heatdata$Stratifying_Variable <- factor(heatdata$Stratifying_Variable,
+                                            levels = rev(unique(heatdata$Stratifying_Variable)))
 
     par(ask = TRUE)
     heat <- ggplot(data = heatdata) +

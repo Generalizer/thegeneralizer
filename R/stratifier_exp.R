@@ -19,10 +19,12 @@
 #'@seealso \url{http://thegeneralizer.org/}, also add other resources
 #' @examples
 
-stratifier_exp <- function(x, idnum, metric = "gower", clusters, autosave = TRUE){
+
+
+stratifier <- function(x, idnum, metric = "gower", clusters = NULL, autosave = TRUE){
 
   ##### IS THIS THE RIGHT ERROR TRAP??
-  if(clusters < 1){
+  if(is.null(clusters)){
     stop("You should choose a number of clusters to stratify your data into.")
   }
 
@@ -55,17 +57,6 @@ stratifier_exp <- function(x, idnum, metric = "gower", clusters, autosave = TRUE
       "the following variables: \n\n")
 
   cat(paste(names(x),collapse=", "))
-
-  # Verifying the variables
-
-  cat(red("\n\nPress [esc] to exit and remove the variables you do not wish to include in the stratification.",
-      "Else, proceed."))
-
-  if(menu(choices = c("Yes", "No"), title = cat("\nDo you wish to proceed?")) == 1){
-
-  }else{
-    stop("You have stopped the stratification process.")
-  }
 
   # Clustering ---------------------------------------------------------
 

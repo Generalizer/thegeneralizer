@@ -52,3 +52,5 @@ gen_index <- function(popdata, sample, var1, var2){
   return(gen_ind)
 
 }
+
+
