@@ -47,13 +47,12 @@ stratifier <- function(x, metric = "gower"){
     cat("You have chosen the ")
     if(pop == 1){
       cat("IPEDS")
+      idnum <- c("unitid", "instnm", "addr", "state", "zip", "gentele", "webaddr")
       } else {
         cat("K-12")}
     cat(" dataset.")
 
     cat("\n\nIf you would like to adjust or restrict your inference population (for example, if you are interested in only one location, etc.), make sure that you have altered the data frame appropriately. \n\n")
-
-    idnum <- c("UNITID", "INSTNM", "ADDR", "State", "ZIP", "GENTELE", "WEBADDR")
 
   }
 
@@ -102,11 +101,11 @@ stratifier <- function(x, metric = "gower"){
   var_select <- function(){
 
     names <- switch(pop,
-                    "1" = c("PCT_GrantAid", "PCT_Pell", "PCT_FedLoans", "PCT_AnyAid", "Urbanicity",
-                            "Control_Level (Public/Private/For Profit)", "Total_Undergrad", "Admit_rate",
-                            "Retention_Fullt", "Retention_Partt", "Multisystem_Status", "HS_Remedial_Services",
-                            "Remedial_Services", "PCT_Female", "PCT_NatAA", "PCT_Asian", "PCT_Black", "PCT_Hispanic",
-                            "PCT_NatHPI", "PCT_White", "PCT_LowInc"
+                    "1" = c("pct_grant_aid", "pct_pell", "pct_fed_loans", "pct_any_aid", "urbanicity",
+                            "control_level", "total_undergrad_lg", "admit_rate",
+                            "multisystem_status", "hs_remedial_services",
+                            "remedial_services", "pct_female", "pct_nat_aa", "pct_asian", "pct_black", "pct_hispanic",
+                            "pct_nat_hpi", "pct_white", "pct_low_inc"
                             ),
                     "2" = c("to be inserted. K12 not ready"),
                     "3" = names(x),

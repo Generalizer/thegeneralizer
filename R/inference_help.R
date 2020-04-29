@@ -11,7 +11,7 @@ inference_help <- function(){
   pop <- menu(choices=(c("K-12", "Post-secondary")),
               title = cat("First, we need to define your inference population. This is the population which you believe your intervention will be applicable to. Are you looking at K-12 education or post-secondary education? "))
   if(pop == 1){
-    cat("We have an in-built dataset 'k12', which is taken from Common Core Data 2016-2017. This is population data on all public elementary and secondary schools in the US. ")
+    cat("We have an in-built dataset 'cc', which is taken from Common Core Data 2016-2017. This is population data on all public elementary and secondary schools in the US. ")
   }
   if(pop == 2){
     cat("We have an in-built dataset 'ipeds', which is taken from IPEDS 2017. This is population data on more than 7,500 post-secondary institutions in the US.")
