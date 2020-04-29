@@ -81,13 +81,13 @@ Financial aid - Grants, loans, assistantships, scholarships, fellowships, tuitio
 \item{pct_mid_inc}{(double) percentage of students in income level 48,001-75,000}
 \item{pct_mid_high_inc}{(double) percentage of students in income level 75,001-110,000}
 \item{pct_high_inc}{(double) percentage of students in income level 110,001 or more}
-\item{public}{(factor) from \code{Control_Level}; \code{1} for public institutions, \code{0} otherwise}
-\item{private_profit}{(factor) from \code{Control_Level}; \code{1} for private for-profit institutions, \code{0} otherwise}
-\item{private_notforprofit}{(factor) from \code{Control_Level}; \code{1} for private not-for-profit institutions, \code{0} otherwise}
-\item{city}{(factor) from \code{Urbanicity}; \code{1} for institutions in cities, \code{0} otherwise}
-\item{suburb}{(factor) from \code{Urbanicity}; \code{1} for institutions in suburbs, \code{0} otherwise}
-\item{town}{(factor) from \code{Urbanicity}; \code{1} for institutions in towns, \code{0} otherwise}
-\item{rural}{(factor) from \code{Urbanicity}; \code{1} for institutions in rural areas, \code{0} otherwise}
+\item{public}{(factor) from \code{control_level}; \code{1} for public institutions, \code{0} otherwise}
+\item{private_profit}{(factor) from \code{control_level}; \code{1} for private for-profit institutions, \code{0} otherwise}
+\item{private_notforprofit}{(factor) from \code{control_level}; \code{1} for private not-for-profit institutions, \code{0} otherwise}
+\item{city}{(factor) from \code{urbanicity}; \code{1} for institutions in cities, \code{0} otherwise}
+\item{suburb}{(factor) from \code{urbanicity}; \code{1} for institutions in suburbs, \code{0} otherwise}
+\item{town}{(factor) from \code{urbanicity}; \code{1} for institutions in towns, \code{0} otherwise}
+\item{rural}{(factor) from \code{urbanicity}; \code{1} for institutions in rural areas, \code{0} otherwise}
 }}
 \source{
 \url{https://nces.ed.gov/ipeds/datacenter/DataFiles.aspx}
