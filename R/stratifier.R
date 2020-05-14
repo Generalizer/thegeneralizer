@@ -36,6 +36,8 @@ stratifier <- function(x, metric = "gower", clusters = NULL,
   if(guided == TRUE){
 # Define inference population  ---------------------------------------------
 
+
+# Thoughts; when to set seed? Probably shouldn't set seed hidden inside function.
       pop <- menu(choices = (c("IPEDS (Post-secondary)", "Common Core (K-12)",
                              "I'm using a custom dataset from a different universe")),
                   title = cat("Your chosen inference population is the '", deparse(substitute(x)),
@@ -52,7 +54,7 @@ stratifier <- function(x, metric = "gower", clusters = NULL,
             cat("K-12")}
         cat(" dataset.")
 
-        cat("\n\nIf you would like to adjust or restrict your inference population (for example, if you are interested in only one location, etc.), make sure that you have altered the data frame appropriately. \n\n")
+        cat("\n\nIf you would like to adjust or restrict your inference population (for \nexample, if you are interested in only one location, etc.), make sure that you have altered the data frame appropriately. \n\n")
 
       }
 
@@ -76,9 +78,10 @@ stratifier <- function(x, metric = "gower", clusters = NULL,
       }
 
       filterhelp <- menu(choices = c("Ready to proceed", "Need help filtering"),
-                         title = cat("If you need to alter the data frame, enter 0 to exit;
-                                     you can use " %+% bold("dplyr::filter()") %+% " or
-                                     " %+% bold("set_percentile_limits()") %+% " and return.\n"))
+                         title = cat("If you need to alter the data frame, enter 0 to exit; you can use " %+% blue$bold("dplyr::filter()") %+% " or " %+% blue$bold("set_percentile_limits()") %+% " and return.\n"))
+
+      #### Note: Need to make sure 0 will actually exit, because right now it doesn't!
+      ####
       if(filterhelp == 2){
         inference_help()
         return()
@@ -87,16 +90,11 @@ stratifier <- function(x, metric = "gower", clusters = NULL,
       # Selecting the ID column(s)
 
       id <- x %>% select(idnum)
-
-      # From now on the id column(s) is separated from the rest of the data frame, they're stored as "id".
-      # "idnum" is a vector of the id column(s).
-
       x <- x %>% select(-idnum)
 
     # Select stratifying variables --------------------------------------------
 
-      cat("\nYou're now ready to select your stratification variables.
-          The following are the variables available in your dataset. \n")
+      cat("\nYou're now ready to select your stratification variables. The following are the variables available in your dataset. \n")
 
       if(pop == 3){
         cat(red$bold("\nDo note that the stratifier function will only accept
@@ -164,9 +162,7 @@ stratifier <- function(x, metric = "gower", clusters = NULL,
       cat("\nHere are summary statistics and histograms of each of your stratifying variables.\n\n")
 
       sumstats <- x %>%
-        summarize_all(list(base::mean, stats::sd, base::min, base::max), na.rm=TRUE) # I don't know why I have to tell it this
-      # but if I don't sometimes it randomly decides that it doesn't know
-      # what one or more of the functions is
+        summarize_all(list(base::mean, stats::sd, base::min, base::max), na.rm=TRUE)
       means <- sumstats %>% select(contains("fn1"))
       sds <- sumstats %>% select(contains("fn2"))
       mins <- sumstats %>% select(contains("fn3"))
@@ -304,15 +300,6 @@ stratifier <- function(x, metric = "gower", clusters = NULL,
 
     cat("This might take a little while. Please bear with us.")
 
-    set.seed(111) # Can change this to whatever Programmer Katie uses
-    # to see if we can match the web app results.
-
-    # Soo I learned today that Kmeans breaks if there are ANY missing values in the distance matrix.
-    # It seems that, although the gower metric is pretty good at handling missing data,
-    # if there is a TON of missing data, it will still fail and leave
-    # NAs in distance.
-    # So this next line says to automatically use multiple imputation (mice) to fill in missing values.
-    # Sometimes it may not be necessary at all, but some variables have a lot of missing data.
     suppressMessages(
       x <- mice::complete(mice(x, print = FALSE, m = 1), 1)
     )
