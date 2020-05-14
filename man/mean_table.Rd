@@ -4,21 +4,23 @@
 \alias{mean_table}
 \title{Calculate and visualize the means of stratifying variables across strata.}
 \usage{
-mean_table(solution, plots = TRUE)
+mean_table(solution, plots = TRUE, store = FALSE)
 }
 \arguments{
-\item{solution}{object storing the output of \code{stratifier}}
+\item{solution}{object storing the output of \code{stratifier}; usually called \code{generalizer_output}}
 
 \item{plots}{defaults to \code{TRUE}; whether or not to create plots}
+
+\item{store}{defaults to \code{FALSE}; whether to export table and plots to files}
 }
 \value{
 a table of the mean values of selected stratifying variables across strata
 }
 \description{
-This function does stuff 'n' thangs.
+This function is designed to be run after using \code{stratifier} on the output that is produced. It produces a table of the population means and standard deviations of the stratification variables selected in each cluster. It also presents some visualizations of the population cluster information, which can help users describe the clusters.
 }
 \details{
-This paragraph talks more about the stuff 'n' thangs.
+The function by default does not store this information, but users can save the plots manually, or specify the argument \code{store} to export the table and plots to files in their current working directory.
 }
 \examples{
 \dontrun{

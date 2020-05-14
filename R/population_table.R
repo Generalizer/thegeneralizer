@@ -1,11 +1,12 @@
 #'Calculate and visualize the means of stratifying variables across strata.
 #'
-#'This function does stuff 'n' thangs.
+#'This function is designed to be run after using \code{stratifier} on the output that is produced. It produces a table of the population means and standard deviations of the stratification variables selected in each cluster. It also presents some visualizations of the population cluster information, which can help users describe the clusters.
 #'
-#'This paragraph talks more about the stuff 'n' thangs.
+#'The function by default does not store this information, but users can save the plots manually, or specify the argument \code{store} to export the table and plots to files in their current working directory.
 #'
-#'@param solution object storing the output of \code{stratifier}
+#'@param solution object storing the output of \code{stratifier}; usually called \code{generalizer_output}
 #'@param plots defaults to \code{TRUE}; whether or not to create plots
+#'@param store defaults to \code{FALSE}; whether to export table and plots to files
 #'@return a table of the mean values of selected stratifying variables across strata
 #'@seealso \url{http://thegeneralizer.org/}, also add other resources
 #' @examples
@@ -14,18 +15,18 @@
 #' mean_table(solution)
 #' }
 
-mean_table <- function(solution, plots = TRUE){
+mean_table <- function(solution, plots = TRUE, store = FALSE){
 
   data <- solution[[3]]
 
   n_clusters <- max(solution[[1]]$clusters)
 
   cat("\n\nYou have specified ")
-  cat(bold (n_clusters)) 
+  cat(bold (n_clusters))
   cat(" strata, which explains ")
   cat(bold(100*round(solution$between.SS_DIV_total.SS, 4), "%"))
   cat(" of the total variation in the population")
-  
+
   cat("The following table presents \nthe average value (mean) for each covariate for each stratum. \nThe first row, 'All,' presents the average values for the \nentire inference population. The last column, '# of \nSchools,' lists the total number of schools in the inference \npopulation that fall within each stratum.\n\n")
 
   data <- data.frame(data, clusters=as.character(solution[[1]]$clusters))
@@ -95,7 +96,7 @@ mean_table <- function(solution, plots = TRUE){
                                    (Mean - Pop_Mean)/Pop_Mean <= -0.7 ~ -0.7,
                                    TRUE ~ (Mean - Pop_Mean)/Pop_Mean)) %>%
       mutate(Clusters = ifelse(Clusters == "Population", "Total", Clusters))
-    
+
     #Preserve levels
     heatdata$Stratifying_Variable <- factor(heatdata$Stratifying_Variable,
                                             levels = rev(unique(heatdata$Stratifying_Variable)))

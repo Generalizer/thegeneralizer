@@ -11,12 +11,16 @@
 #'should then be provided as input to the \code{mean_table()} and \code{schools_table()}
 #'functions.
 #'
-#'@param data A data frame containing information about schools in your
+#'@param x A data frame containing information about schools in your
 #'  inference population. Must contain a column of ID numbers identifying each
 #'  school, along with columns of stratifying variables.
 #'@param metric A character string specifying the metric to be used in
 #'  calculating distances for observations. The default is \code{gower}; other
 #'  options are \code{euclidean} and \code{manhattan}.
+#'@param clusters
+#'@param autosave
+#'@param guided
+#'@param idnum
 #'@return A list. The first element contains the raw results of stratifying the
 #'  data into the user-selected number of clusters. The second element contains
 #'  several lists, each ranking the observations within clusters.

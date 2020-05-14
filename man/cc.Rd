@@ -23,12 +23,14 @@ A Hispanic or Latino person is of Cuban, Mexican, Puerto Rican, Cuban, South or 
 \item{pct_native_hawaiian_or_other_pacific_islander}{(double) proportion of Native Hawaiian or Other Pacific Islander students enrolled.
 
 A Native Hawaiian or Other Pacific Islander person has origins in any of the original peoples of Hawaii, Guam, Samoa, or other Pacific Islands.}
-\item{pct_not_specified}{}
-\item{pct_two_or_more_races}{}
-\item{pct_white}{}
-\item{pct_female}{}
-\item{pct_male}{}
-\item{pct_gender_not_specified}{}
+\item{pct_not_specified}{(double) proportion of race/ethnicity unknown students enrolled.}
+\item{pct_two_or_more_races}{(double) proportion of students of two or more races enrolled.}
+\item{pct_white}{(double) proportion of White men and women enrolled for credit during the 12-month period.
+
+A White person has origins in any of the original peoples of Europe, the Middle East, or North Africa.}
+\item{pct_female}{(double) proportion of female students enrolled.}
+\item{pct_male}{REMOVE THIS}
+\item{pct_gender_not_specified}{REMOVE THIS}
 \item{pct_direct_certification}{}
 \item{pct_free_and_reduced_lunch}{}
 }}
