@@ -27,16 +27,16 @@
 #' schools_table(solution, number = 100, sample = idvars)
 #' }
 
-schools_table <- function(solution, number, sample = NULL){
+recruitment <- function(solution, number, sample = NULL){
 
   if(missing(number)){
-    stop("You must specify the number of schools that you aim to recruit.")
+    stop("You must specify the number of participants that you aim to recruit.")
   }
 
   data <- solution[[3]]
     if(is.null(sample)){
-    cat("Your specified goal is to recruit", number, "schools out of your inference \npopulation of",
-        dim(data)[1], "schools. Ideally, these", number, "schools would be divided \nproportionally across the", max(solution[[1]]$clusters), "strata. Doing so leads to the least bias \nand no increase in standard errors.\n\n")
+    cat("Your specified goal is to recruit", number, "participants out of your inference \npopulation of",
+        dim(data)[1], "participants. Ideally, these", number, "participants would be divided \nproportionally across the", max(solution[[1]]$clusters), "strata. Doing so leads to the least bias \nand no increase in standard errors.\n\n")
       }
 
 
@@ -62,7 +62,7 @@ schools_table <- function(solution, number, sample = NULL){
     # 6, 7, 8 schools (etc.) and there were no schools proportionally in a stratum.
     # This could sort of inspire a conversation about other warnings/notes/traps to include?
     if(number < base::max(solution[[1]]$clusters)){
-      stop("Warning: You are attempting to recruit fewer schools than there are strata. Consider recruiting additional schools or changing the number of strata.")
+      stop("Warning: You are attempting to recruit fewer participants than there are strata. Consider recruiting additional participants or changing the number of strata.")
     }
     if(is.null(sample)){
       print.data.frame(num_schools)
@@ -78,7 +78,7 @@ schools_table <- function(solution, number, sample = NULL){
           filename <- paste("recruitment_list_for_", i, ".csv", sep="")
           write.csv(recruitlist, file = filename, row.names = FALSE)
         }
-        cat(nclusters, "recruitment lists have been generated, one per stratum. They \nhave been saved as .csv files to your current working directory. \nEach contains the ID information for the schools, ranked in \norder of desirability. \n\nAttempt to recruit the desired proportionate number of schools \nper stratum. If a school declines or fails to respond, recruit \nthe next school in the list. \n\nWhen you have finished recruiting schools, return here and rerun \nthis function, setting the 'sample' argument equal to the ID \ncolumn(s) of the schools you successfully recruited.")
+        cat(nclusters, "recruitment lists have been generated, one per stratum. They \nhave been saved as .csv files to your current working directory. \nEach contains the ID information for the participants, ranked in \norder of desirability. \n\nAttempt to recruit the desired proportionate number of participants \nper stratum. If a participant declines or fails to respond, recruit \nthe next participant in the list. \n\nWhen you have finished recruiting participants, return here and rerun \nthis function, setting the 'sample' argument equal to the ID \ncolumn(s) of the participants you successfully recruited.")
       }else{
         cat("Return here when you are ready to generate recruitment lists.")
       }
@@ -128,15 +128,15 @@ schools_table <- function(solution, number, sample = NULL){
 
     cat("\nThe sample of", num_recruited, "schools you recruited has a \ngeneralizability index of", format(generalizability_index, digits = 4), "relative to the \ninference population you selected.")
 
-    you_done_goofed <- paste("\n\nCAUTION: Your generalizability index is below 0.50. \nGeneralizations are COMPLETELY UNWARRANTED (based upon \nthe covariates you selected, ", paste(colnames(solution[[3]]), collapse=', '), ").", sep='')
+    below_50 <- paste("\n\nCAUTION: Your generalizability index is below 0.50. \nGeneralizations are COMPLETELY UNWARRANTED (based upon \nthe covariates you selected, ", paste(colnames(solution[[3]]), collapse=', '), ").", sep='')
 
-    you_done_kinda_goofed <- paste("\n\nCAUTION: Your generalizability index is between 0.50 and 0.90. \nThis means that your sample is not a miniature of your inference \npopulation. However, it may be similar enough for statistical \nadjustments to compensate. Adjustments are more likely to be \neffective if your index is closer to 0.90 than 0.50. For \nguidelines about making such adjustments, see the package references.")
+    between_50_90 <- paste("\n\nCAUTION: Your generalizability index is between 0.50 and 0.90. \nThis means that your sample is not a miniature of your inference \npopulation. However, it may be similar enough for statistical \nadjustments to compensate. Adjustments are more likely to be \neffective if your index is closer to 0.90 than 0.50. For \nguidelines about making such adjustments, see the package references.")
 
     if(generalizability_index < 0.50){
-      cat(red$bold(you_done_goofed))
+      cat(red$bold(below_50))
     }else{
       if(generalizability_index >= 0.50 & generalizability_index < 0.90){
-        cat(red$bold(you_done_kinda_goofed))
+        cat(red$bold(between_50_90))
       }
       if(generalizability_index >= 0.90){
         cat(blue$bold("\n\nSuccess! \n\nYour sample should be as similar to your inference population \nas a random sample of the same size on the covariates you \nselected (", paste(colnames(solution[[3]]), collapse=', '), ").", sep=''))

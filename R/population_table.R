@@ -176,19 +176,6 @@ mean_table <- function(solution, plots = TRUE, store = FALSE){
 
     cat("\nThis plot presents how much the average value of each strata deviates from the population average, per variable. Below average values are blue, while above average values are red. The black line represents the population average. \n\n")
 
-    parcoord_plot <- solution$iddata %>%
-      select(colnames(solution$data), clusterID) %>%
-      mutate(clusterID = factor(clusterID)) %>%
-      ggparcoord(columns = 1:(length(colnames(solution$data))), groupColumn = "clusterID",
-                 alphaLines = 0.1) +
-      theme_bw()
-
-    print(parcoord_plot)
-
-    silh_plot <- plot(silhouette(solution[[1]]$clusters, dist = dist(solution$data)), border = NA)
-
-    print(silh_plot)
-
     par(ask = FALSE)
 
   }
