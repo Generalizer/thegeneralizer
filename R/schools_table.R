@@ -2,13 +2,13 @@
 #'
 #'The input to this function must be the output of the \code{stratifer} function,
 #'along with the sample size that the researcher aims to recruit (typically the
-#'desired number of schools).
+#'desired number of units).
 #'
 #'As output, this function prints a table with columns equal to the number of
 #'strata specified in \code{stratifier()} and three rows. The first row presents
-#'the number of schools in the inference population that fall in each stratum. The
+#'the number of units in the inference population that fall in each stratum. The
 #'second row presents the proportion of the population in each stratum. Finally, the
-#'third row contains the number of schools per stratum that the researcher should
+#'third row contains the number of units per stratum that the researcher should
 #'aim to recruit in order to ensure that the proportions in their sample mirror
 #'those in the population.
 #'
@@ -19,12 +19,12 @@
 #'@seealso \url{http://thegeneralizer.org/}, also add other resources
 #' @examples
 #' \dontrun{
-#' # For an experiment where the researcher wants to recruit 100 schools:
-#' schools_table(solution, number = 100)
+#' # For an experiment where the researcher wants to recruit 100 units:
+#' units_table(solution, number = 100)
 #'
 #' # For an experiment that has been conducted; the researcher wanted
-#' # to recruit 100 schools and has uploaded their school IDs:
-#' schools_table(solution, number = 100, sample = idvars)
+#' # to recruit 100 units and has uploaded their unit IDs:
+#' units_table(solution, number = 100, sample = idvars)
 #' }
 
 recruitment <- function(solution, number, sample = NULL){
@@ -41,35 +41,35 @@ recruitment <- function(solution, number, sample = NULL){
 
 
     data2 <- data.frame(data, clusters=as.character(solution[[1]]$clusters))
-    num_schools <- data2 %>%
+    num_units <- data2 %>%
       group_by(clusters) %>%
       dplyr::summarise(count = n()) %>%
       mutate(proportion = count/(length(solution[[1]]$clusters))) %>%
       mutate(to_recruit = round(number*proportion)) %>%
       select(-clusters)
-    num_schools <- t(num_schools)
+    num_units <- t(num_units)
     Clusters <- NULL
     for(i in 1:(max(solution[[1]]$clusters))){
       Clusters[i] <- paste("Stratum", (i), sep=' ')
     }
-    colnames(num_schools) <- Clusters
-    row.names(num_schools) <- c("# of Schools", "Pop. Proportion","# to Recruit")
-    num_schools <- as.data.frame(num_schools)
-    num_schools[2,] <- format(num_schools[2,], digits = 3)
-    num_schools[1,] <- format(num_schools[1,], digits = 0)
+    colnames(num_units) <- Clusters
+    row.names(num_units) <- c("# of Participants", "Pop. Proportion","# to Recruit")
+    num_units <- as.data.frame(num_units)
+    num_units[2,] <- format(num_units[2,], digits = 3)
+    num_units[1,] <- format(num_units[1,], digits = 0)
 
     # Note to self -- the following warning wouldn't trigger if there were, say,
-    # 6, 7, 8 schools (etc.) and there were no schools proportionally in a stratum.
+    # 6, 7, 8 units (etc.) and there were no units proportionally in a stratum.
     # This could sort of inspire a conversation about other warnings/notes/traps to include?
     if(number < base::max(solution[[1]]$clusters)){
       stop("Warning: You are attempting to recruit fewer participants than there are strata. Consider recruiting additional participants or changing the number of strata.")
     }
     if(is.null(sample)){
-      print.data.frame(num_schools)
+      print.data.frame(num_units)
       if(menu(choices=c("Yes", "No"), title=cat("\nAre you ready to generate recruitment lists now?")) == 1){
         nclusters <- max(solution[[1]]$clusters)
         for(i in 1:nclusters){
-          Rank <- seq(1:(num_schools[1,i]))
+          Rank <- seq(1:(num_units[1,i]))
           recruitlist <- data.frame(Rank, solution[[2]][[i]])
           recruitlist[,"CONTACTED? (Y/N)"] <- ''
           recruitlist[,"DATE OF CONTACT"] <- ''
@@ -83,14 +83,14 @@ recruitment <- function(solution, number, sample = NULL){
         cat("Return here when you are ready to generate recruitment lists.")
       }
 
-      return(invisible(num_schools))
+      return(invisible(num_units))
   }else{
 
     ## Stuff in this "Else" bracket is to calculate the generalizability index
     # for samples that have already been collected.
 
     # Clusters has to be a factor below in order to not drop empty groups
-    # if there are no schools recruited in a given cluster.
+    # if there are no units recruited in a given cluster.
 
     overall <- solution[[4]]
     overall$clusterID <- as.factor(overall$clusterID)
@@ -118,15 +118,15 @@ recruitment <- function(solution, number, sample = NULL){
     generalizability_index <- test_output$g_index
 
     cat("Your specified goal was to recruit", number,
-        "schools out of your \ninference population of",
-        pop_size, "schools. Ideally, these", number,
-        "schools \nwould be divided proportionally across the", num_strata,
+        "participants out of your \ninference population of",
+        pop_size, ". Ideally, these", number,
+        "participants \nwould be divided proportionally across the", num_strata,
         "strata. \n\nYou successfully recruited", num_recruited,
-        "schools. \n\nThis table displays the average value of each covariate in \nyour sample and in your inference population. The more \nsimilar these values are, the better your generalizability.\n\n")
+        "participants. \n\nThis table displays the average value of each covariate in \nyour sample and in your inference population. The more \nsimilar these values are, the better your generalizability.\n\n")
 
     print(test_output$covariate_table)
 
-    cat("\nThe sample of", num_recruited, "schools you recruited has a \ngeneralizability index of", format(generalizability_index, digits = 4), "relative to the \ninference population you selected.")
+    cat("\nThe sample of", num_recruited, "participants you recruited has a \ngeneralizability index of", format(generalizability_index, digits = 4), "relative to the \ninference population you selected.")
 
     below_50 <- paste("\n\nCAUTION: Your generalizability index is below 0.50. \nGeneralizations are COMPLETELY UNWARRANTED (based upon \nthe covariates you selected, ", paste(colnames(solution[[3]]), collapse=', '), ").", sep='')
 
