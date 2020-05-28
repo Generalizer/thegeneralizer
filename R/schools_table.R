@@ -110,7 +110,7 @@ schools_table <- function(solution, number, sample = NULL){
 
     test_output <- assess(data = test_sample, trial = "trial",
            selection_covariates = colnames(solution$data),
-           is_data_disjoint = TRUE, trim_pop = FALSE)
+           is_data_disjoint = TRUE)
 
     pop_size <- dim(solution[[4]])[1]
     num_strata <- max(solution[[4]]$clusterID)

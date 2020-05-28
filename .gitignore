@@ -4,3 +4,6 @@
 .Ruserdata
 inst/doc
 notes.R
+flowchart.R
+different_plots.R
+ipeds_manual_filtering.R
