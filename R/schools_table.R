@@ -12,8 +12,8 @@
 #'aim to recruit in order to ensure that the proportions in their sample mirror
 #'those in the population.
 #'
-#'@param solution sdfdf
-#'@param number sdfsdfsd
+#'@param solution object storing the output of \code{stratifier}; usually called \code{generalizer_output}
+#'@param number total desired sample size
 #'@param sample Defaults to \code{NULL}.
 #'@return thangs
 #'@seealso \url{http://thegeneralizer.org/}, also add other resources
@@ -27,7 +27,7 @@
 #' schools_table(solution, number = 100, sample = idvars)
 #' }
 
-schools_table <- function(solution, number, sample=NULL){
+schools_table <- function(solution, number, sample = NULL){
 
   if(missing(number)){
     stop("You must specify the number of schools that you aim to recruit.")
@@ -38,8 +38,8 @@ schools_table <- function(solution, number, sample=NULL){
     cat("Your specified goal is to recruit", number, "schools out of your inference \npopulation of",
         dim(data)[1], "schools. Ideally, these", number, "schools would be divided \nproportionally across the", max(solution[[1]]$clusters), "strata. Doing so leads to the least bias \nand no increase in standard errors.\n\n")
       }
-  #### Note: should ask beth? This might be where the unit of randomization
-    # plays the biggest role.
+
+
     data2 <- data.frame(data, clusters=as.character(solution[[1]]$clusters))
     num_schools <- data2 %>%
       group_by(clusters) %>%
@@ -89,46 +89,44 @@ schools_table <- function(solution, number, sample=NULL){
     ## Stuff in this "Else" bracket is to calculate the generalizability index
     # for samples that have already been collected.
 
-    wpj <- as.numeric(num_schools[2,])
-
     # Clusters has to be a factor below in order to not drop empty groups
     # if there are no schools recruited in a given cluster.
 
     overall <- solution[[4]]
     overall$clusterID <- as.factor(overall$clusterID)
 
-    sample_data <- suppressWarnings(suppressMessages(semi_join(overall, sample)))
-    sample_data <- sample_data %>%
-      group_by(clusterID, .drop = FALSE) %>%
-      dplyr::summarise(count = n())
-    sample_data <- sample_data %>%
-      mutate(proportion = count/(sum(count)))
+    sample <- sample %>%
+      clean_names() %>%
+      mutate(trial = rep(1, dim(sample)[1])) %>%
+      mutate(unitid = factor(unitid)) %>%
+      select(unitid, trial)
+    suppressWarnings({
+      test_sample <- sample %>%
+        full_join((ipeds %>% clean_names()), by = c("unitid")) %>%
+        select(unitid, trial, colnames(solution$data)) %>%
+        replace_na(list(trial = 0)) %>%
+        data.frame()
+    })
 
-    wsj <- as.vector(sample_data$proportion)
+    test_output <- assess(data = test_sample, trial = "trial",
+           selection_covariates = colnames(solution$data),
+           is_data_disjoint = TRUE, trim_pop = FALSE)
+
+    pop_size <- dim(solution[[4]])[1]
+    num_strata <- max(solution[[4]]$clusterID)
+    num_recruited <- dim(sample)[1]
+    generalizability_index <- test_output$g_index
 
     cat("Your specified goal was to recruit", number,
         "schools out of your \ninference population of",
-        dim(solution[[4]])[1], "schools. Ideally, these", number,
-        "schools \nwould be divided proportionally across the", max(solution[[4]]$clusterID),
-        "strata. \n\nYou successfully recruited", sum(sample_data$count),
-        "schools. \n\nThis table displays the proportion of schools per stratum \nin your sample and in your inference population. The more similar \nthese proportions are, the better your generalizability.\n\n")
+        pop_size, "schools. Ideally, these", number,
+        "schools \nwould be divided proportionally across the", num_strata,
+        "strata. \n\nYou successfully recruited", num_recruited,
+        "schools. \n\nThis table displays the average value of each covariate in \nyour sample and in your inference population. The more \nsimilar these values are, the better your generalizability.\n\n")
 
-    overall_outcomes <- data.frame(rbind(wpj, wsj))
-    rownames(overall_outcomes) <- c("Proportion in Population",
-                                    "Proportion in Sample")
-    Clusters <- NULL
-    for(i in 1:(max(solution[[1]]$clusters))){
-      Clusters[i] <- paste("Stratum", (i), sep=' ')
-    }
-    colnames(overall_outcomes) <- Clusters
+    print(test_output$covariate_table)
 
-    print(overall_outcomes)
-
-    generalizability_index <- sum(sqrt(wpj * wsj))
-    cat("\nThe sample of", sum(sample_data$count), "schools you recruited has a \ngeneralizability index of", format(generalizability_index, digits = 4), "relative to the \ninference population you selected.")
-
-    # The next bit is to make sure they pay attention to their index score, ESPECIALLY
-    # if it's bad.
+    cat("\nThe sample of", num_recruited, "schools you recruited has a \ngeneralizability index of", format(generalizability_index, digits = 4), "relative to the \ninference population you selected.")
 
     you_done_goofed <- paste("\n\nCAUTION: Your generalizability index is below 0.50. \nGeneralizations are COMPLETELY UNWARRANTED (based upon \nthe covariates you selected, ", paste(colnames(solution[[3]]), collapse=', '), ").", sep='')
 

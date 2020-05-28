@@ -17,6 +17,9 @@
 
 mean_table <- function(solution, plots = TRUE, store = FALSE){
 
+  # allow the option for color choice
+  # look around for other visualizations
+
   data <- solution[[3]]
 
   n_clusters <- max(solution[[1]]$clusters)
@@ -24,7 +27,7 @@ mean_table <- function(solution, plots = TRUE, store = FALSE){
   cat("\n\nYou have specified ")
   cat(bold (n_clusters))
   cat(" strata, which explains ")
-  cat(bold(100*round(solution$between.SS_DIV_total.SS, 4), "%"))
+  cat(bold(100*round(solution[[1]]$between.SS_DIV_total.SS, 4), "%"))
   cat(" of the total variation in the population")
 
   cat("The following table presents \nthe average value (mean) for each covariate for each stratum. \nThe first row, 'All,' presents the average values for the \nentire inference population. The last column, '# of \nSchools,' lists the total number of schools in the inference \npopulation that fall within each stratum.\n\n")
@@ -171,7 +174,20 @@ mean_table <- function(solution, plots = TRUE, store = FALSE){
 
     print(facetwrappedbars)
 
-    cat("\nThis plot presents how much the average value of each strata deviates from the population average, per variable. Below average values are blue, while above average values are red. The black line represents the population average. \n\n") ### Ask Bea what it presents hahah
+    cat("\nThis plot presents how much the average value of each strata deviates from the population average, per variable. Below average values are blue, while above average values are red. The black line represents the population average. \n\n")
+
+    parcoord_plot <- solution$iddata %>%
+      select(colnames(solution$data), clusterID) %>%
+      mutate(clusterID = factor(clusterID)) %>%
+      ggparcoord(columns = 1:(length(colnames(solution$data))), groupColumn = "clusterID",
+                 alphaLines = 0.1) +
+      theme_bw()
+
+    print(parcoord_plot)
+
+    silh_plot <- plot(silhouette(solution[[1]]$clusters, dist = dist(solution$data)), border = NA)
+
+    print(silh_plot)
 
     par(ask = FALSE)
 

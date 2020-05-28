@@ -34,10 +34,7 @@ stratifier <- function(x, metric = "gower", clusters = NULL,
                        autosave = TRUE, guided = TRUE, idnum = NULL){
 
   if(guided == TRUE){
-# Define inference population  ---------------------------------------------
 
-
-# Thoughts; when to set seed? Probably shouldn't set seed hidden inside function.
       pop <- menu(choices = (c("IPEDS (Post-secondary)", "Common Core (K-12)",
                              "I'm using a custom dataset from a different universe")),
                   title = cat("Your chosen inference population is the '", deparse(substitute(x)),
