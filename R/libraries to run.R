@@ -1,0 +1,37 @@
+# importFrom("graphics", "par")
+# importFrom("stats", "mahalanobis", "quantile", "sd", "var")
+# importFrom("utils", "menu", "select.list", "write.csv")
+# importFrom("mice", "mice", "complete")
+# importFrom("tidyr", "gather")
+# import("ggplot2", "dplyr", "readr", "purrr",
+#        "tibble", "stringr", "forcats", "reshape2",
+#        "ClusterR", "cluster", "ggthemes", "moments")
+# import("crayon")
+
+# install.packages("DiagrammeR")
+library(DiagrammeR)
+
+# install.packages("modelr")
+library(modelr)
+
+# install.packages("recipes")
+library(recipes)
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(purrr)
+library(tibble)
+library(stringr)
+library(forcats)
+library(reshape2)
+library(ClusterR)
+library(cluster)
+library(ggthemes)
+library(moments)
+library(crayon)
+library(mice)
+library(tidyverse)
+library(janitor)
+
+# install.packages("WeightIt")
+library(WeightIt)

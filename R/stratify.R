@@ -115,28 +115,28 @@ stratify <- function(data, guided = TRUE){
     suppressWarnings(distance <- daisy(data_full, metric = metric))
     cat("\n1: Calculated distance matrix.")
     solution <- KMeans_rcpp(as.matrix(distance), clusters = n_strata, verbose = TRUE)
-
-    x2 <- data.frame(id, data_full, clusterID = solution$clusters)
-    sortedschools <- list(NULL)
-
-    for(i in 1:n_strata){
-      dat3 <- x2 %>%
-        dplyr::filter(clusterID == i)
-      idvar <- dat3 %>% select(all_of(idnum))
-      dat4 <- dat3 %>% select(-c(all_of(idnum), clusterID))
-      mu <- moment(dat4, order = 1, central = FALSE) # population mean of stratifying vars
-      v <- var(dat4)
-      a <- diag(v)
-
-      if(any(a == 0)){ a[which(a == 0)] <- 0.00000001 }
-      cov.dat <- diag(a)
-      ma.s <- mahalanobis(dat4, mu, cov.dat)
-      dat4 <- data.frame(idvar, dat4, distance = ma.s, clusterID = dat3$clusterID)
-      sortedschools[[i]] <- dat4 %>% # Produces a list of data frames, one per stratum, sorted by
-        # distance (so the top N schools in each data frame are the "best," etc.)
-        arrange(distance) %>%
-        select(idnum)
-    }
+#
+#     x2 <- data.frame(id, data_full, clusterID = solution$clusters)
+#     sortedschools <- list(NULL)
+#
+#     for(i in 1:n_strata){
+#       dat3 <- x2 %>%
+#         dplyr::filter(clusterID == i)
+#       idvar <- dat3 %>% select(all_of(idnum))
+#       dat4 <- dat3 %>% select(-c(all_of(idnum), clusterID))
+#       mu <- moment(dat4, order = 1, central = FALSE) # population mean of stratifying vars
+#       v <- var(dat4)
+#       a <- diag(v)
+#
+#       if(any(a == 0)){ a[which(a == 0)] <- 0.00000001 }
+#       cov.dat <- diag(a)
+#       ma.s <- mahalanobis(dat4, mu, cov.dat)
+#       dat4 <- data.frame(idvar, dat4, distance = ma.s, clusterID = dat3$clusterID)
+#       sortedschools[[i]] <- dat4 %>% # Produces a list of data frames, one per stratum, sorted by
+#         # distance (so the top N schools in each data frame are the "best," etc.)
+#         arrange(distance) %>%
+#         select(idnum)
+    # }
 
   }else{
 
