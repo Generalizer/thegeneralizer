@@ -8,7 +8,6 @@
 #' @param data data frame comprised of "stacked" trial and target population data
 #' @return \code{trim_pop} returns a data frame, where the target population covariates do not exceed the bounds of the trial covariates
 
-#' @export
 trim_pop <- function(trial, selection_covariates, data){
 
   ##### CHECKS #####
@@ -19,10 +18,10 @@ trim_pop <- function(trial, selection_covariates, data){
   if(anyNA(match(selection_covariates,names(data)))){
     stop("Not all covariates listed are variables in the data provided!",call. = FALSE)
   }
-
-  if(!length(na.omit(unique(data[,trial]))) == 2){
-    stop("Trial Membership variable not binary", call. = FALSE)
-  }
+#
+#   if(!length(na.omit(unique(data[,trial]))) == 2){
+#     stop("Trial Membership variable not binary", call. = FALSE)
+#   }
 
   if(anyNA(match(names(table(data[,trial])),c("0","1")))){
     stop("Sample Membership variable must be coded as `0` (not in trial) or `1` (in trial)",call. = FALSE)
@@ -34,7 +33,7 @@ trim_pop <- function(trial, selection_covariates, data){
   if(length(selection_covariates)==1){
     trial_dat = data.frame(trial_dat)
     names(trial_dat) = selection_covariates
-    }
+  }
 
   ##### find covariate bounds in the trial #####
   covariate_bounds = function(covariate){

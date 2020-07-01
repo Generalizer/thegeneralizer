@@ -8,9 +8,7 @@
 #' @param is_data_disjoint logical. If TRUE, then trial and population data are considered independent.
 #' @param seed numeric. By default, the seed is set to 13783, otherwise can be specified (such as for simulation purposes).
 #' @return \code{generalize_bart} returns a list of the TATE estimate, standard error, and 95\% CI bounds
-#' @import stats
 
-#' @export
 generalize_bart <- function(outcome, treatment, trial, selection_covariates, data,is_data_disjoint = TRUE,seed){
 
   ##### set the seed #####
